@@ -1,7 +1,8 @@
 const express = require("express");
-const cros = require('cros');
 const routes = require("./routes");
-// app.use(cros());
+const cors = require('cors');
+const app = express();
+app.use(cors());
 app.use("/api", routes);
 
 const port = process.env.PORT || 8000;

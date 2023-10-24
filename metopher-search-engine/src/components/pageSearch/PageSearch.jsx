@@ -10,6 +10,8 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
+import Card from '@mui/material/Card';
+import { makeStyles } from '@material-ui/core/styles';
 import { Drawer, TextField, Grid, Paper } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import axios from "axios";
@@ -26,43 +28,62 @@ const theme = createTheme({
 
 function PageSearch(props) {
   // Your existing JSON data
-  const [jsonData, setJsonData] = useState([
-    {
-      poet: "Poet 1",
-      metaphor: "Metaphor 1",
-      poem: "Poem 1",
-      source: "Source 1",
-      target: "Target 1",
-    },
-    {
-      poet: "Poet 2",
-      metaphor: "Metaphor 2",
-      poem: "Poem 2",
-      source: "Source 2",
-      target: "Target 2",
-    },
-    {
-      poet: "Poet 1",
-      metaphor: "Metaphor 1",
-      poem: "Poem 1",
-      source: "Source 1",
-      target: "Target 1",
-    },
-    {
-      poet: "Poet 2",
-      metaphor: "Metaphor 2",
-      poem: "Poem 2",
-      source: "Source 2",
-      target: "Target 2",
-    },
-    // Add more JSON objects as needed
-  ]);
+
+  const [jsonData, setJsonData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.post("http://localhost:8000/api/search"); // Send a GET request to the server.
+        if (response.status === 200) {
+          setJsonData(response.data); // Update the state with the search results.
+        } else {
+          console.error("Server returned an error");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      } finally {
+      }
+    };
+
+    // fetchData();
+  }, [jsonData]);
+
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  const [inputs, setInputs] = useState({});
+  const [inputs, setInputs] = useState({
+    poem: "",
+    target: "",
+    poet: "",
+    source: "",
+    meaning: "",
+  });
+  const paperStyle = {
+    padding: '16px',
+    
+    transition: 'transform 0.2s',
+    '&:hover': {
+      transform: 'scale(5.05)',
+    },
+  };
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
+  const useStyles = makeStyles((theme) => ({
+    movingText: {
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      animation: 'moveLeftToRight 10s linear infinite', // Adjust the animation duration (10s) as needed
+    },
+    '@keyframes moveLeftToRight': {
+      '0%': {
+        transform: 'translateX(100%)', // Start off-screen to the right
+      },
+      '100%': {
+        transform: 'translateX(-100%)', // Move to off-screen to the left
+      },
+    },
+  }));
 
   const handleInputChange = (event) => {
     console.log(event.target.id, event.target.value);
@@ -72,19 +93,55 @@ function PageSearch(props) {
     console.log(inputs);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async () => {
+    setJsonData([]);
+    console.log(inputs);
+    try {
+      const responce = await axios.get(
+        "http://localhost:8000/api/search-by-params",
+        {
+          params: inputs,
+        }
+      );
+      console.log(responce);
+      if (responce.data.length === 0) {
+        setJsonData([]);
+        alert("not matching poems");
+      } else {
+        setJsonData(responce.data);
+      }
+    } catch (error) {
+      alert(error);
+    }
+    // axios
+    //   .post('http://localhost:8000/api/search-by-params',
+    //     {params: inputs,})
+    //   .then((response) => {
+    //     // Handle the response data here
+    //     setJsonData(response.data)
+    //     console.log("Response data:", response.data);
+    //   })
+    //   .catch((error) => {
+    //     // Handle any errors here
+    //     console.error("Error:", error);
+    //   });
+    // alert(inputs);
+    // console.log("submited the form");
+  };
+  const classes = useStyles;
+  const getAll = (event) => {
     event.preventDefault();
     axios
-      .post('http://localhost:8000/api/search?query={"year":2019}', inputs)
+      .post("http://localhost:8000/api/search")
       .then((response) => {
         // Handle the response data here
+        setJsonData(response.data);
         console.log("Response data:", response.data);
       })
       .catch((error) => {
         // Handle any errors here
         console.error("Error:", error);
       });
-    alert(inputs);
     console.log("submited the form");
   };
 
@@ -97,7 +154,20 @@ function PageSearch(props) {
 
   const drawer = (
     <div style={{ backgroundColor: "#ffffff" }}>
-      <Toolbar style={{ backgroundColor: "#0b1571" }} />
+      <Toolbar style={{ backgroundColor: "#0b1571" }} >
+      <img
+          src={require("./logo.png")}
+          alt="Image Alt Text"
+          style={{ width: '60px', height: 'auto' }} // Adjust the width and height as needed
+        />
+        <Typography variant="h6" noWrap component="div" style={{ color: 'white', fontStyle:'italic' }}>
+              SinhalaMetophorEngine
+            </Typography>
+      </Toolbar>
+      <br></br>
+      <Button variant="outlined" onClick={getAll}>
+        All poems with metophers
+      </Button>
       <List>
         <ListItem>
           <Typography variant="h6">Find your poem</Typography>
@@ -142,8 +212,8 @@ function PageSearch(props) {
         </ListItem>
         <ListItem>
           <TextField
-            label="Written Year"
-            id="year"
+            label="Metopher Meaning"
+            id="meaning"
             variant="outlined"
             fullWidth
             onChange={handleInputChange}
@@ -181,9 +251,9 @@ function PageSearch(props) {
             >
               <MenuIcon />
             </IconButton>
-            <Typography variant="h6" noWrap component="div">
-              SinhalaMetophorEngine
-            </Typography>
+            <Typography variant="body1" className={classes.movingText}>
+      Your moving sentence goes here
+    </Typography>
           </Toolbar>
         </AppBar>
         <Box
@@ -237,18 +307,42 @@ function PageSearch(props) {
           }}
         >
           <Toolbar />
-
-          <Grid container spacing={2}>
+          <Typography variant="body1" style={{fontSize: '1.2rem' ,color: '#555', fontStyle: 'italic'}} >
+          Sinhala Metaphor Search is a powerful online tool designed to unlock the beauty and depth of Sinhala poetry. Our platform allows you to explore the world of metaphors in Sinhala literature, making it easy to find, analyze, and appreciate the poetic artistry within poems, books, and various sources. You can search for metaphors by poet, poem name, book name, source, target, and even their meanings. Discover the hidden gems of Sinhala literature, gain insights into the rich tapestry of language, and connect with the profound beauty of metaphors like never before. Whether you're a student, scholar, or simply a lover of Sinhala literature, Sinhala Metaphor Search is your gateway to the enchanting world of metaphors in Sinhala poetry.
+        </Typography>
+        <br/>
+          <Grid container spacing={2} >
             {jsonData.map((item, index) => (
               <Grid item xs={4} key={index}>
-                <Paper elevation={3} style={{ padding: "16px" }}>
-                  <Typography variant="h6">{item.poet}</Typography>
-                  <Typography variant="body1">
-                    Metaphor: {item.metaphor}
+                <Paper elevation={3} style={ {padding: '16px',color:'#033291'}} sx={{'&:hover':{transform: 'scale(1.05)',transition: 'box-shadow .3s'}}}>
+                  <Typography variant="h6">{item._source.poem}</Typography>
+
+                  <Typography variant="body1" align="left">
+
+                    Book 
+                    <Card variant="outlined">{item._source.book_name}</Card>
                   </Typography>
-                  <Typography variant="body1">Poem: {item.poem}</Typography>
-                  <Typography variant="body1">Source: {item.source}</Typography>
-                  <Typography variant="body1">Target: {item.target}</Typography>
+                  <Typography variant="body1" align="left">
+                    Lyrics
+                    <Card variant="outlined"style={ {fontWeight:'1200'}}>{item._source.line}</Card>
+                  </Typography>
+                  <Typography variant="body1" align="left">
+                    Metaphor
+                    <Card variant="outlined"> {item._source.metaphorical_terms}</Card>
+                    
+                  </Typography>
+                  <Typography variant="body1" align="left">
+                    Source
+                    <Card variant="outlined">{item._source.source}</Card>
+                  </Typography>
+                  <Typography variant="body1" align="left">
+                    Target
+                    <Card variant="outlined">{item._source.target}</Card>
+                  </Typography>
+                  <Typography variant="body1" align="left">
+                    Meaning
+                    <Card variant="outlined">{item._source.meaning}</Card>
+                  </Typography>
                 </Paper>
               </Grid>
             ))}

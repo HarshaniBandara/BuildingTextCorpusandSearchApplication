@@ -2,6 +2,7 @@
   "name": "metopher-search-engine",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:8000",
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
@@ -19,7 +20,6 @@
     "react-bootstrap": "^2.9.0",
     "react-bootstrap-sidebar-menu": "^2.0.3",
     "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1",
     "sass": "^1.69.4",
     "styled-components": "^6.1.0",
     "web-vitals": "^2.1.4"
@@ -48,6 +48,7 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:8000"
-  
+  "devDependencies": {
+    "react-scripts": "^5.0.1"
+  }
 }
