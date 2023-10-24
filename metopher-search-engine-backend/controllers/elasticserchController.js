@@ -31,7 +31,7 @@ async function searchByPoet(query) {
       body: {
         query: {
           match: {
-            target: "ඇයගේ සමනල් මුවක්",
+            target: query.target,
           },
         },
       },
@@ -46,11 +46,8 @@ async function searchByPoet(query) {
 const searchByParams = async (req, res) => {
   try {
     console.log(req);
-    const poem=req.poem;
-    const poet=req.poet;
-    const source=req.source;
-    const target=req.target;
-    const meaning=req.meaning;
+    const { poet, poem, source, target, meaning } = req;
+    console.log(poet);
     const query = [];
 
     if (meaning) {
@@ -70,8 +67,8 @@ const searchByParams = async (req, res) => {
     }
     query.push({ match: { Metaphor_present_or_not: true } });
 
-    if (query.length === 1) {
-      return res.status(400);
+    if (query.length === 0) {
+      return res.status(400).send({ message: "No selected parameters" });
     }
 
     const response = await elasticsearch.search({
@@ -91,6 +88,7 @@ const searchByParams = async (req, res) => {
   } catch (error) {
     console.log("error", error);
     throw error;
+    res.status(400).send({ error: error, message: "Internal server error" });
   }
 };
 

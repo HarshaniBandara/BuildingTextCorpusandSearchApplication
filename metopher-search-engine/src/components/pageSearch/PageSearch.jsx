@@ -10,11 +10,12 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import Card from '@mui/material/Card';
-import { makeStyles } from '@material-ui/core/styles';
+import Card from "@mui/material/Card";
+import { makeStyles } from "@material-ui/core/styles";
 import { Drawer, TextField, Grid, Paper } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import axios from "axios";
+import { Routes, Route, useNavigate, Link } from "react-router-dom";
 const drawerWidth = 440;
 const apiURL = "http://localhost:8000/api/search";
 const theme = createTheme({
@@ -59,11 +60,11 @@ function PageSearch(props) {
     meaning: "",
   });
   const paperStyle = {
-    padding: '16px',
-    
-    transition: 'transform 0.2s',
-    '&:hover': {
-      transform: 'scale(5.05)',
+    padding: "16px",
+
+    transition: "transform 0.2s",
+    "&:hover": {
+      transform: "scale(5.05)",
     },
   };
   const handleDrawerToggle = () => {
@@ -71,17 +72,18 @@ function PageSearch(props) {
   };
   const useStyles = makeStyles((theme) => ({
     movingText: {
-      color:'red',
-      whiteSpace: 'nowrap',
-      overflow: 'hidden',
-      animation: 'moveLeftToRight 10s linear infinite', // Adjust the animation duration (10s) as needed
+      color: "red",
+      whiteSpace: "nowrap",
+      overflow: "hidden",
+      animation: "moveLeftToRight 10s linear infinite", // Adjust the animation duration (10s) as needed
+      transition: "opacity 500ms ease-in",
     },
-    '@keyframes moveLeftToRight': {
-      '0%': {
-        transform: 'translateX(100%)', // Start off-screen to the right
+    "@keyframes moveLeftToRight": {
+      "0%": {
+        transform: "translateX(100%)", // Start off-screen to the right
       },
-      '100%': {
-        transform: 'translateX(-100%)', // Move to off-screen to the left
+      "100%": {
+        transform: "translateX(-100%)", // Move to off-screen to the left
       },
     },
   }));
@@ -129,10 +131,11 @@ function PageSearch(props) {
     // alert(inputs);
     // console.log("submited the form");
   };
-  
+
+  const navigate = useNavigate();
   const getAll = (event) => {
     // event.preventDefault();
-    
+
     axios
       .post("http://localhost:8000/api/search")
       .then((response) => {
@@ -144,13 +147,13 @@ function PageSearch(props) {
         // Handle any errors here
         console.error("Error:", error);
       });
-      setInputs({
-        poem: "",
-        target: "",
-        poet: "",
-        source: "",
-        meaning: "",
-      })
+    setInputs({
+      poem: "",
+      target: "",
+      poet: "",
+      source: "",
+      meaning: "",
+    });
     console.log("submited the form");
   };
 
@@ -162,19 +165,26 @@ function PageSearch(props) {
   };
 
   const drawer = (
-    <div style={{ backgroundColor: "#ffffff" }}>
-      <Toolbar style={{ backgroundColor: "#0b1571" }} >
-      <img
-          src={require("./logo.png")}
-          alt="Image Alt Text"
-          style={{ width: '60px', height: 'auto' }} // Adjust the width and height as needed
-        />
-        <Typography variant="h6" noWrap component="div" style={{ color: 'white', fontStyle:'italic' }}>
-              SinhalaMetophorEngine
-            </Typography>
+    <div style={{ backgroundColor: "#ffffff", alignItems: "center" }}>
+      <Toolbar style={{ backgroundColor: "#0b1571" }}>
+        <Link to="/">
+          <img
+            src={require("./logo.png")}
+            alt="Image Alt Text"
+            style={{ width: "60px", height: "auto" }} // Adjust the width and height as needed
+          />
+        </Link>
+        <Typography
+          variant="h6"
+          noWrap
+          component="div"
+          style={{ color: "white", fontStyle: "italic" }}
+        >
+          SinhalaMetophorEngine
+        </Typography>
       </Toolbar>
       <br></br>
-      <Button variant="outlined" onClick={getAll}>
+      <Button variant="outlined" onClick={getAll} align="center">
         All poems with metophers
       </Button>
       <List>
@@ -188,6 +198,7 @@ function PageSearch(props) {
             variant="outlined"
             id="poem"
             fullWidth
+            value={inputs.poem}
             onChange={handleInputChange}
           />
         </ListItem>
@@ -196,6 +207,7 @@ function PageSearch(props) {
             label="Source"
             variant="outlined"
             id="source"
+            value={inputs.source}
             fullWidth
             onChange={handleInputChange}
           />
@@ -205,6 +217,7 @@ function PageSearch(props) {
             label="Target"
             id="target"
             variant="outlined"
+            value={inputs.target}
             fullWidth
             onChange={handleInputChange}
           />
@@ -215,7 +228,7 @@ function PageSearch(props) {
             label="Poet"
             id="poet"
             variant="outlined"
-            value={inputs.}
+            value={inputs.poet}
             fullWidth
             onChange={handleInputChange}
           />
@@ -226,6 +239,7 @@ function PageSearch(props) {
             id="meaning"
             variant="outlined"
             fullWidth
+            value={inputs.meaning}
             onChange={handleInputChange}
           />
         </ListItem>
@@ -262,8 +276,8 @@ function PageSearch(props) {
               <MenuIcon />
             </IconButton>
             <Typography variant="body1" className={classes.movingText}>
-      Your moving sentence goes here
-    </Typography>
+              Your moving sentence goes here
+            </Typography>
           </Toolbar>
         </AppBar>
         <Box
@@ -317,34 +331,62 @@ function PageSearch(props) {
           }}
         >
           <Toolbar />
-          <Typography variant="body1" style={{fontSize: '1.2rem' ,color: '#555', fontStyle: 'italic'}} >
-          Sinhala Metaphor Search is a powerful online tool designed to unlock the beauty and depth of Sinhala poetry. Our platform allows you to explore the world of metaphors in Sinhala literature, making it easy to find, analyze, and appreciate the poetic artistry within poems, books, and various sources. You can search for metaphors by poet, poem name, book name, source, target, and even their meanings. Discover the hidden gems of Sinhala literature, gain insights into the rich tapestry of language, and connect with the profound beauty of metaphors like never before. Whether you're a student, scholar, or simply a lover of Sinhala literature, Sinhala Metaphor Search is your gateway to the enchanting world of metaphors in Sinhala poetry.
-        </Typography>
-        <br/>
-          <Grid container spacing={2} >
+          <Typography
+            variant="body1"
+            style={{ fontSize: "1.2rem", color: "#555", fontStyle: "italic" }}
+          >
+            Sinhala Metaphor Search is a powerful online tool designed to unlock
+            the beauty and depth of Sinhala poetry. Our platform allows you to
+            explore the world of metaphors in Sinhala literature, making it easy
+            to find, analyze, and appreciate the poetic artistry within poems,
+            books, and various sources. You can search for metaphors by poet,
+            poem name, book name, source, target, and even their meanings.
+            Discover the hidden gems of Sinhala literature, gain insights into
+            the rich tapestry of language, and connect with the profound beauty
+            of metaphors like never before. Whether you're a student, scholar,
+            or simply a lover of Sinhala literature, Sinhala Metaphor Search is
+            your gateway to the enchanting world of metaphors in Sinhala poetry.
+          </Typography>
+          <br />
+          <Grid container spacing={2}>
             {jsonData.map((item, index) => (
               <Grid item xs={4} key={index}>
-                <Paper elevation={3} style={ {padding: '16px',color:'#033291'}} sx={{'&:hover':{transform: 'scale(1.05)',transition: 'box-shadow .3s'}}}>
+                <Paper
+                  elevation={3}
+                  style={{ padding: "16px", color: "#033291" }}
+                  sx={{
+                    "&:hover": {
+                      transform: "scale(1.05)",
+                      transition: "box-shadow .3s",
+                    },
+                  }}
+                >
                   <Typography variant="h6">{item._source.poem}</Typography>
 
                   <Typography variant="body1" align="left">
-
-                    Book 
+                    Book
                     <Card variant="outlined">{item._source.book_name}</Card>
                   </Typography>
                   <Typography variant="body1" align="left">
-
-                    Published Year 
+                    Published Year
                     <Card variant="outlined">{item._source.year}</Card>
                   </Typography>
                   <Typography variant="body1" align="left">
+                    Poet
+                    <Card variant="outlined">{item._source.Poet}</Card>
+                  </Typography>
+                  <Typography variant="body1" align="left">
                     Lyrics
-                    <Card variant="outlined"style={ {fontWeight:'1200'}}>{item._source.line}</Card>
+                    <Card variant="outlined" style={{ fontWeight: "1200" }}>
+                      {item._source.line}
+                    </Card>
                   </Typography>
                   <Typography variant="body1" align="left">
                     Metaphor
-                    <Card variant="outlined"> {item._source.metaphorical_terms}</Card>
-                    
+                    <Card variant="outlined">
+                      {" "}
+                      {item._source.metaphorical_terms}
+                    </Card>
                   </Typography>
                   <Typography variant="body1" align="left">
                     Source
