@@ -71,6 +71,7 @@ function PageSearch(props) {
   };
   const useStyles = makeStyles((theme) => ({
     movingText: {
+      color:'red',
       whiteSpace: 'nowrap',
       overflow: 'hidden',
       animation: 'moveLeftToRight 10s linear infinite', // Adjust the animation duration (10s) as needed
@@ -84,7 +85,7 @@ function PageSearch(props) {
       },
     },
   }));
-
+  const classes = useStyles;
   const handleInputChange = (event) => {
     console.log(event.target.id, event.target.value);
     const id = event.target.id;
@@ -128,9 +129,10 @@ function PageSearch(props) {
     // alert(inputs);
     // console.log("submited the form");
   };
-  const classes = useStyles;
+  
   const getAll = (event) => {
-    event.preventDefault();
+    // event.preventDefault();
+    
     axios
       .post("http://localhost:8000/api/search")
       .then((response) => {
@@ -142,6 +144,13 @@ function PageSearch(props) {
         // Handle any errors here
         console.error("Error:", error);
       });
+      setInputs({
+        poem: "",
+        target: "",
+        poet: "",
+        source: "",
+        meaning: "",
+      })
     console.log("submited the form");
   };
 
@@ -206,6 +215,7 @@ function PageSearch(props) {
             label="Poet"
             id="poet"
             variant="outlined"
+            value={inputs.}
             fullWidth
             onChange={handleInputChange}
           />
@@ -321,6 +331,11 @@ function PageSearch(props) {
 
                     Book 
                     <Card variant="outlined">{item._source.book_name}</Card>
+                  </Typography>
+                  <Typography variant="body1" align="left">
+
+                    Published Year 
+                    <Card variant="outlined">{item._source.year}</Card>
                   </Typography>
                   <Typography variant="body1" align="left">
                     Lyrics

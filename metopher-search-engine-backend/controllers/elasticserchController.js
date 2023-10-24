@@ -2,15 +2,16 @@ const elasticsearch = require("../config/elasticsearch");
 
 // get all
 const search = async (req, res) => {
-  console.log('in the search ellastic ')
+  console.log("in the search ellastic ");
   try {
     const response = await elasticsearch.search({
       index: "my-sinhala-metaphors",
       body: {
-        query:{
-        match: {
-          "Metaphor_present_or_not": "true",
-        },} 
+        query: {
+          match: {
+            Metaphor_present_or_not: "true",
+          },
+        },
       },
       size: 300,
     });
@@ -45,20 +46,32 @@ async function searchByPoet(query) {
 const searchByParams = async (req, res) => {
   try {
     console.log(req);
-    const {poet, poem, source, target,meaning } = req;
-    console.log(poet);
-    const mustQueries = [];
+    const poem=req.poem;
+    const poet=req.poet;
+    const source=req.source;
+    const target=req.target;
+    const meaning=req.meaning;
+    const query = [];
 
-    if (meaning) mustQueries.push({ match: { meaning: meaning} });
-    // if (lyrics) mustQueries.push({ match_phrase: { lyrics: lyrics } });
-    if (poet) mustQueries.push({ match: { poet: poet } });
-    if (poem) mustQueries.push({ match: { poem: poem } });
-    if (source) mustQueries.push({ match: { source: source } });
-    if (target) mustQueries.push({ match: { target: target } });
-    mustQueries.push({ match: { Metaphor_present_or_not: true, } });
+    if (meaning) {
+      query.push({ match: { meaning: meaning } });
+    }
+    if (poet) {
+      query.push({ match: { poet: poet } });
+    }
+    if (poem) {
+      query.push({ match: { poem: poem } });
+    }
+    if (source) {
+      query.push({ match: { source: source } });
+    }
+    if (target) {
+      query.push({ match: { target: target } });
+    }
+    query.push({ match: { Metaphor_present_or_not: true } });
 
-    if (mustQueries.length === 0) {
-      return res.status(400).send({ message: "No selected parameters" });
+    if (query.length === 1) {
+      return res.status(400);
     }
 
     const response = await elasticsearch.search({
@@ -67,22 +80,17 @@ const searchByParams = async (req, res) => {
       body: {
         query: {
           bool: {
-            must: mustQueries,
-        
-            
+            must: query,
           },
-          
         },
       },
     });
-   
-    console.log(response.hits.hits)
+
+    console.log(response.hits.hits);
     return response.hits.hits;
-    res.status(200).send(data.hits.hits);
   } catch (error) {
     console.log("error", error);
-    throw error
-    res.status(400).send({ error: error, message: "Internal server error" });
+    throw error;
   }
 };
 
