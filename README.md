@@ -21,4 +21,4 @@ Make sure you have the following software installed on your machine:
 3. Add data to elastic search using the following commands.
    ```sh
    curl -X PUT "localhost:9200/sinhala-metophors?pretty" -H "Content-Type: application/json" -d @mapping_file.json
-   curl -X POST "localhost:9200/amazon-reviews/_bulk?pretty" -H "Content-Type: application/json" --data-binary @data_file.json
+   curl -X POST "localhost:9200/sinhala--metophors/_bulk?pretty" -H "Content-Type: application/json" --data-binary @data_file.json
