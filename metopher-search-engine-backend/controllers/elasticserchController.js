@@ -54,7 +54,7 @@ const searchByParams = async (req, res) => {
       query.push({ match: { meaning: meaning } });
     }
     if (poet) {
-      query.push({ match: { poet: poet } });
+      query.push({ match: { Poet: poet } });
     }
     if (poem) {
       query.push({ match: { poem: poem } });

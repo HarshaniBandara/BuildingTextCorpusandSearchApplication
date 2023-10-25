@@ -145,7 +145,7 @@ export default function Home() {
                 Search your poem
               </Button>
 
-              <Button variant="outlined">Add New Poem</Button>
+              {/* <Button variant="outlined">Add New Poem</Button> */}
             </Stack>
           </Container>
         </Box>
